@@ -15,15 +15,19 @@ namespace MoneyApp
         private Button postPriceButton;
         private Button removePriceButton;
         private Button backButton;
+        private Button predictButton;
         private Label resultLabel;
         private ListBox priceListBox;
         private const string CryptoDataFile = "crypto_data.txt";
+        private Prediction prediction;
 
         public CryptoForm()
         {
+            prediction = new Prediction();
+            prediction.Train(CryptoDataFile, windowSize: 10, epochs: 15);
             this.Text = "Crypto Prices";
-            this.Width = 350;
-            this.Height = 400;
+            this.Width = 400;
+            this.Height = 450;
 
             Label coinLabel = new Label() { Text = "Enter Coin:", Left = 10, Top = 20, Width = 100 };
             coinTextBox = new TextBox() { Left = 120, Top = 20, Width = 150 };
@@ -39,8 +43,11 @@ namespace MoneyApp
             backButton = new Button() { Text = "Back to Finance", Left = 10, Top = 320, Width = 150 };
             backButton.Click += BackButton_Click;
 
+            predictButton = new Button() { Text = "Predict", Left = 250, Top = 80, Width = 100 };
+            predictButton.Click += PredictButton_Click;
+
             resultLabel = new Label() { Text = "Price: $0.00", Left = 10, Top = 110, Width = 300 };
-            priceListBox = new ListBox() { Left = 10, Top = 140, Width = 310, Height = 150 };
+            priceListBox = new ListBox() { Left = 10, Top = 140, Width = 360, Height = 150 };
             LoadCryptoData();
 
             this.Controls.Add(coinLabel);
@@ -49,6 +56,7 @@ namespace MoneyApp
             this.Controls.Add(postPriceButton);
             this.Controls.Add(removePriceButton);
             this.Controls.Add(backButton);
+            this.Controls.Add(predictButton);
             this.Controls.Add(resultLabel);
             this.Controls.Add(priceListBox);
         }
@@ -91,6 +99,25 @@ namespace MoneyApp
                 {
                     resultLabel.Text = "Invalid coin or network error";
                 }
+            }
+        }
+
+        private void PredictButton_Click(object sender, EventArgs e)
+        {
+            if (!string.IsNullOrEmpty(coinTextBox.Text) && decimal.TryParse(resultLabel.Text.Replace("Price: $", ""), out decimal price))
+            {
+                float[] recentData = { (float)price }; // recent prices
+                float predictedValue = prediction.PredictNext(recentData);
+      
+
+                string predictionRecord = $"Prediction - {coinTextBox.Text.ToUpper()} - Predicted Value: ${predictedValue:F2} - {DateTime.Now:yyyy-MM-dd HH:mm:ss}";
+                priceListBox.Items.Add(predictionRecord);
+
+                File.WriteAllLines(CryptoDataFile, priceListBox.Items.Cast<string>());
+            }
+            else
+            {
+                MessageBox.Show("Please enter a valid coin and perform a query first.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
 

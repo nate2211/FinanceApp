@@ -30,6 +30,7 @@ namespace FinanceApp
 
         public FinanceForm()
         {
+
             InitializeComponent();
             LoadData();
         }
