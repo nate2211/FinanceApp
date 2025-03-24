@@ -71,6 +71,10 @@ namespace FinanceApp
             Button openStockFormButton = new Button() { Text = "Stock Prices", Left = 250, Top = 350, Width = 150 };
             openStockFormButton.Click += OpenStockFormButton_Click;
 
+            Button openKrogerFormButton = new Button() { Text = "Kroger Products", Left = 400, Top = 350, Width = 150 };
+            openKrogerFormButton.Click += OpenKrogerFormButton_Click;
+
+            this.Controls.Add(openKrogerFormButton);
             this.Controls.Add(openStockFormButton);
             this.Controls.Add(profitLabel);
             this.Controls.Add(costLabel);
@@ -87,6 +91,12 @@ namespace FinanceApp
             this.Controls.Add(openCryptoFormButton);
 
             this.ResumeLayout(false);
+        }
+        private void OpenKrogerFormButton_Click(object sender, EventArgs e)
+        {
+            KrogerForm krogerForm = new KrogerForm();
+            krogerForm.Show();
+            this.Hide();
         }
         private void OpenStockFormButton_Click(object sender, EventArgs e)
         {
